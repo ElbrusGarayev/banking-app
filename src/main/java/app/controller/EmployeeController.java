@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Comparator;
 import java.util.List;
 
 @AllArgsConstructor
@@ -17,7 +18,6 @@ import java.util.List;
 public class EmployeeController {
 
     private final ClientService clientService;
-    private final FeeRepo feeRepo;
 
     /**
      * http://localhost:8080/clients?amount=6000&duration=10
@@ -26,13 +26,8 @@ public class EmployeeController {
     @GetMapping("clients")
     List<Client> handleUsers(@RequestParam int amount,@RequestParam  int duration){
         //duration is month
-        return clientService.getAll(amount, duration);
+        List<Client> clients = clientService.getAll(amount, duration);
+        clients.sort(Comparator.comparingInt(o -> o.getFee().getDelayDaysCount()));
+        return clients;
     }
-
-    @GetMapping("fees")
-    List<Fee> handleFees(){
-        return feeRepo.findAll();
-    }
-
-
 }
